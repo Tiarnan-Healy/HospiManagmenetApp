@@ -70,7 +70,7 @@ public class AdminLoginActivity extends AppCompatActivity { // Screen for admin 
         Executors.newSingleThreadExecutor().execute(() -> {
             Staff s = AppDatabase.getInstance(getApplicationContext()).staffDao().findByEmail(email); // Fetch staff by email
             // Validate: must exist, be ADMIN role, have a stored PIN, and it must match
-            if (s == null || s.role != Staff.Role.ADMIN || s.adminPin == null || !s.adminPin.equals(pin)) {
+            if (s == null || s.role != Staff.Role.ADMIN || s.adminPin == null || !s.adminPin.equals(String.valueOf(pin.hashCode()))) { // Hashed pin comparison
                 runOnUiThread(() -> Toast.makeText(this, "Invalid admin credentials.", Toast.LENGTH_SHORT).show()); // Show error on UI thread
             } else {
                 // Persist session details and proceed into the Admin Portal

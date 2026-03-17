@@ -18,6 +18,7 @@ import com.example.hospimanagmenetapp.data.dao.StaffDao;     // DAO for Staff op
 import com.example.hospimanagmenetapp.data.entities.Staff;   // Staff entity (has Role enum, email, PIN)
 import com.example.hospimanagmenetapp.ui.adapters.StaffAdapter; // RecyclerView adapter to render staff list
 import com.example.hospimanagmenetapp.util.SessionManager;   // Simple session storage for RBAC checks
+import com.example.hospimanagmenetapp.util.ValidationUtils;
 
 import java.util.Arrays;             // Utility to turn arrays into Lists
 import java.util.List;               // List interface for collections
@@ -60,8 +61,8 @@ public class AdminPortalActivity extends AppCompatActivity { // Admin portal: ma
         // RBAC guard unless explicitly bypassed for first-admin bootstrap
         boolean bypass = getIntent().getBooleanExtra("bypassCheck", false); // True if launched from setup flow
         if (!bypass) {
-            String role = SessionManager.getCurrentRole(this); // Read stored role
-            if (!"ADMIN".equals(role)) {     // Only admins may enter
+             String role = SessionManager.getCurrentRole(this); // Read stored role
+            if ((role == null) || !"ADMIN".equals(role)) {     // Only admins may enter
                 Toast.makeText(this, "Admin access required.", Toast.LENGTH_SHORT).show();
                 finish();        // Close and return to previous screen
                 return;
@@ -89,6 +90,12 @@ public class AdminPortalActivity extends AppCompatActivity { // Admin portal: ma
             return;
         }
 
+        // Email validation
+        if (!ValidationUtils.isValidEmail(email)) {
+            Toast.makeText(this, "Invalid email.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         // Do DB I/O off the main thread
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
@@ -97,7 +104,10 @@ public class AdminPortalActivity extends AppCompatActivity { // Admin portal: ma
                 s.fullName = name;              // Map inputs to fields
                 s.email = email;
                 s.role = role;
-                s.adminPin = (role == Staff.Role.ADMIN) ? pin : null; // Store PIN only for admins
+                //s.adminPin = (role == Staff.Role.ADMIN) ? pin : null; // Store PIN only for admins
+                String hashedPin = String.valueOf(pin.hashCode()); // Hashing admin pin for security
+                s.adminPin = hashedPin;
+
 
                 dao.insert(s); // Persist to Room (unique constraints may throw)
 

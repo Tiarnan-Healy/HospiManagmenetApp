@@ -57,6 +57,24 @@ public class PatientRegistrationActivity extends AppCompatActivity { // Screen t
             return; // Do not proceed with invalid identifiers
         }
 
+        // Email validation
+        if (!ValidationUtils.isValidEmail(email)) {
+            Toast.makeText(this, "Invalid email.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Phone validation
+        if (!ValidationUtils.isValidPhone(phone)) {
+            Toast.makeText(this, "Invalid phone number.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // DOB validation
+        if (!ValidationUtils.isValidDate(dob)) {
+            Toast.makeText(this, "DOB must be in format DD-MM-YYYY.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         // Run database I/O off the main thread to keep the UI responsive
         Executors.newSingleThreadExecutor().execute(() -> {
             try {

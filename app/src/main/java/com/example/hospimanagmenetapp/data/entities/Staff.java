@@ -5,34 +5,18 @@ import androidx.room.Entity;          // Marks this class as a Room table
 import androidx.room.Index;           // Allows creating DB indices for faster lookups/uniqueness
 import androidx.room.PrimaryKey;      // Identifies the primary key column
 
-@Entity(
-        tableName = "staff",                              // Actual SQLite table name
-        indices = {@Index(value = {"email"}, unique = true)} // Each staff email must be unique
-)
-public class Staff {
+@Entity(tableName = "staff")    // Marks this class as a Room entity mapped to the 'staff' table
+public class Staff {              // Defines the Staff model class representing a table row
 
-    @PrimaryKey(autoGenerate = true) // Auto-incremented surrogate key
-    public long id;                  // Local DB identifier
+    public enum Role { ADMIN, CLINICIAN, RECEPTION }          // Enum defining possible staff roles within the system
 
-    @NonNull
-    public String fullName;          // Staff member’s full name
+    @PrimaryKey(autoGenerate = true) public long id;  // Primary key; Room auto-generates a unique ID for each staff member
 
-    @NonNull
-    public String email;             // Staff login email (unique)
+    public String fullName;      // Full name of the staff member (optional field)
 
-    public String adminPin;          // PIN used for Admin authentication
+    @NonNull public String email;     // Email address; must not be null — used to identify a staff member
 
-    @NonNull
-    public Role role;                // Staff role used for RBAC
+    @NonNull public Role role;      // Role field using the Role enum; must not be null
 
-    public long createdAt;           // Unix epoch millis when account was created
-    public long updatedAt;           // Unix epoch millis when account was last updated
-
-
-    // Enum defining allowed staff roles
-    public enum Role {
-        ADMIN,
-        CLINICIAN,
-        RECEPTIONIST
-    }
-}
+    public String adminPin;       // Optional PIN used only for admin authentication
+}                                  // End of Staff entity class

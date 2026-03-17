@@ -1,5 +1,11 @@
 package com.example.hospimanagmenetapp.util; // Utility classes for the app live here
 
+import android.text.TextUtils;
+import android.util.Patterns;
+
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 public class ValidationUtils { // Simple holder for validation helper methods
 
     // NHS number validation (exactly 10 digits, with Mod 11 checksum)
@@ -21,5 +27,28 @@ public class ValidationUtils { // Simple holder for validation helper methods
 
         int provided = digits.charAt(9) - '0';           // Extract the provided check digit (last digit)
         return check == provided;                        // Valid only if calculated and provided digits match
+    }
+
+    // Email validation
+    public static boolean isValidEmail(String email) {
+        return !TextUtils.isEmpty(email) &&
+                Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+    // Phone validation (simple international format)
+    public static boolean isValidPhone(String phone) {
+        return TextUtils.isEmpty(phone) || phone.matches("^\\+?\\d{10,15}$");
+    }
+
+    // Date validation (dd-mm-yyyy)
+    public static boolean isValidDate(String date) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
+            sdf.setLenient(false);
+            sdf.parse(date);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
