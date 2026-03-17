@@ -41,6 +41,12 @@ public class MainActivity extends AppCompatActivity { // Entry Activity shown at
             startActivity(i);
         });
 
+        // Appointments button
+        Button btnAppointments = findViewById(R.id.btnAppointments);
+        btnAppointments.setOnClickListener(v ->
+                startActivity(new Intent(this, com.example.hospimanagmenetapp.feature.appointments.ui.AppointmentActivity.class)));
+
+
         // Clear session and update the header (acts like a simple "log out")
         btnLogout.setOnClickListener(v -> {
             SessionManager.clear(this); // Remove stored role/email
