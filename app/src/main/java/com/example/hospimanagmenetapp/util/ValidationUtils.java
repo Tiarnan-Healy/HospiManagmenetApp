@@ -1,5 +1,13 @@
 package com.example.hospimanagmenetapp.util; // Utility classes for the app live here
 
+import android.text.TextUtils;
+import android.util.Patterns;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 public class ValidationUtils { // Simple holder for validation helper methods
 
     // NHS number validation (exactly 10 digits, with Mod 11 checksum)
@@ -21,5 +29,52 @@ public class ValidationUtils { // Simple holder for validation helper methods
 
         int provided = digits.charAt(9) - '0';           // Extract the provided check digit (last digit)
         return check == provided;                        // Valid only if calculated and provided digits match
+    }
+
+    // Email validation
+    public static boolean isValidEmail(String email) {
+        return !TextUtils.isEmpty(email) &&
+                Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+    // Phone validation (simple international format)
+    public static boolean isValidPhone(String phone) {
+        return TextUtils.isEmpty(phone) || phone.matches("^\\+?\\d{10,15}$");
+    }
+
+    // Date validation (dd-mm-yyyy)
+    public static boolean isValidDate(String date) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
+            sdf.setLenient(false);
+            sdf.parse(date);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    // sha256 hashing to avoid saving pin as a string.
+    public static String sha256(String plainPin) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+
+            // Convert the PIN string to bytes using UTF-8 encoding, then hash
+            byte[] hashBytes = digest.digest(
+                    plainPin.getBytes(StandardCharsets.UTF_8)
+            );
+
+            // Convert the raw byte array to a readable hex string
+            // Each byte becomes exactly 2 hex characters (%02x pads with leading zero)
+            StringBuilder hex = new StringBuilder();
+            for (byte b : hashBytes) {
+                hex.append(String.format("%02x", b));
+            }
+
+            return hex.toString(); // e.g. "a665a45920422f9d..."
+
+        } catch (java.security.NoSuchAlgorithmException e) {
+            throw new RuntimeException("SHA-256 algorithm unavailable", e);
+        }
     }
 }
