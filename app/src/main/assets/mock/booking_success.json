@@ -1,0 +1,10 @@
+{
+  "id": 99,
+  "patientNhsNumber": "9434765919",
+  "startTime": 1773792000000,
+  "endTime": 1773878399000,
+  "clinicianId": 101,
+  "clinicianName": "Dr. Smith",
+  "clinic": "Surgery A",
+  "status": "BOOKED"
+}

@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey;      // Identifies the primary key column
 @Entity(tableName = "staff")    // Marks this class as a Room entity mapped to the 'staff' table
 public class Staff {              // Defines the Staff model class representing a table row
 
-    public enum Role { ADMIN, CLINICIAN, RECEPTION }          // Enum defining possible staff roles within the system
+    public enum Role { ADMIN, CLINICIAN, RECEPTION, STAFF }          // Enum defining possible staff roles within the system
 
     @PrimaryKey(autoGenerate = true) public long id;  // Primary key; Room auto-generates a unique ID for each staff member
 

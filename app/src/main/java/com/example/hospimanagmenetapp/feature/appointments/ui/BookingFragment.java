@@ -15,6 +15,7 @@ import com.example.hospimanagmenetapp.data.entities.Appointment;
 import com.example.hospimanagmenetapp.domain.BookOrRescheduleAppointmentUseCase;
 import com.example.hospimanagmenetapp.domain.DetectScheduleConflictsUseCase;
 import com.example.hospimanagmenetapp.security.auth.RbacPolicyEvaluator;
+import com.example.hospimanagmenetapp.util.SessionManager;
 
 import java.util.concurrent.Executors;
 
@@ -68,51 +69,84 @@ public class BookingFragment extends Fragment {
     }
 
     private void confirm() {
+        // RBAC check — runs on main thread, no DB access, fine here
         if (!RbacPolicyEvaluator.canBookOrReschedule(requireContext())) {
-            Toast.makeText(getContext(), "You do not have permission to book.", Toast.LENGTH_LONG).show();
+            android.util.Log.d("BookingFragment", "RBAC block — role: "
+                    + SessionManager.getCurrentRole(requireContext()));
+            Toast.makeText(getContext(),
+                    "You do not have permission to book.", Toast.LENGTH_LONG).show();
             return;
         }
 
-        String nhs = etNhs.getText().toString().trim();
+        // Input validation — main thread, no DB access, fine here
+        String nhs      = etNhs.getText().toString().trim();
         String startStr = etStart.getText().toString().trim();
-        String endStr = etEnd.getText().toString().trim();
+        String endStr   = etEnd.getText().toString().trim();
 
         if (TextUtils.isEmpty(nhs) || TextUtils.isEmpty(startStr) || TextUtils.isEmpty(endStr)) {
-            Toast.makeText(getContext(), "NHS, start and end are required.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(),
+                    "NHS, start and end are required.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        long clinicianId = getArguments().getLong(ARG_CLINICIAN_ID);
-        long start = Long.parseLong(startStr);
-        long end = Long.parseLong(endStr);
-        String clinic = getArguments().getString(ARG_CLINIC);
-
-        // conflict detection
-        boolean conflict = new DetectScheduleConflictsUseCase(requireContext()).hasConflict(clinicianId, start, end);
-        if (conflict) {
-            Toast.makeText(getContext(), "Time conflict detected. Choose another slot.", Toast.LENGTH_LONG).show();
+        // Parse longs defensively before going to background thread
+        long start;
+        long end;
+        try {
+            start = Long.parseLong(startStr);
+            end   = Long.parseLong(endStr);
+        } catch (NumberFormatException e) {
+            Toast.makeText(getContext(),
+                    "Invalid time format. Please re-open this appointment.",
+                    Toast.LENGTH_LONG).show();
             return;
         }
 
-        Appointment a = new Appointment();
-        a.patientNhsNumber = nhs;
-        a.clinicianId = clinicianId;
-        a.clinicianName = getArguments().getString(ARG_CLINICIAN_NAME);
-        a.startTime = start;
-        a.endTime = end;
-        a.clinic = clinic;
-        a.status = "BOOKED";
+        Bundle args      = getArguments();
+        long clinicianId = args.getLong(ARG_CLINICIAN_ID);
+        String clinic    = args.getString(ARG_CLINIC);
 
+        // ALL database work moved into the background thread
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
+                // Conflict detection — DB access, must be off main thread
+                boolean conflict = new DetectScheduleConflictsUseCase(requireContext())
+                        .hasConflict(clinicianId, start, end);
+
+                if (conflict) {
+                    requireActivity().runOnUiThread(() ->
+                            Toast.makeText(getContext(),
+                                    "Time conflict detected. Choose another slot.",
+                                    Toast.LENGTH_LONG).show());
+                    return;
+                }
+
+                // Build appointment and book
+                Appointment a      = new Appointment();
+                a.patientNhsNumber = nhs;
+                a.clinicianId      = clinicianId;
+                a.clinicianName    = args.getString(ARG_CLINICIAN_NAME);
+                a.startTime        = start;
+                a.endTime          = end;
+                a.clinic           = clinic;
+                a.status           = "BOOKED";
+
                 new BookOrRescheduleAppointmentUseCase(requireContext()).execute(a);
+
                 requireActivity().runOnUiThread(() -> {
-                    Toast.makeText(getContext(), "Appointment confirmed.", Toast.LENGTH_LONG).show();
-                    requireActivity().getSupportFragmentManager().popBackStack(); // back to list
+                    Toast.makeText(getContext(),
+                            "Appointment confirmed.", Toast.LENGTH_LONG).show();
+                    // Navigate back to list directly — avoids empty back stack crash
+                    requireActivity().getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.appointmentContainer, new AppointmentListFragment())
+                            .commit();
                 });
+
             } catch (Exception e) {
                 requireActivity().runOnUiThread(() ->
-                        Toast.makeText(getContext(), "Booking failed. Try again.", Toast.LENGTH_LONG).show());
+                        Toast.makeText(getContext(),
+                                "Booking failed. Try again.", Toast.LENGTH_LONG).show());
             }
         });
     }

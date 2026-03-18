@@ -25,4 +25,8 @@ public interface AppointmentDao {
     @Query("SELECT * FROM appointments WHERE clinicianId = :clinicianId AND "
             + "( (startTime < :newEnd AND endTime > :newStart) )")
     List<Appointment> overlapping(long clinicianId, long newStart, long newEnd);
+
+    @Query("SELECT * FROM appointments WHERE startTime BETWEEN :start AND :end " +
+            "AND (:clinic IS NULL OR clinic = :clinic) ORDER BY startTime ASC")
+    List<Appointment> findBetweenFiltered(long start, long end, String clinic);
 }

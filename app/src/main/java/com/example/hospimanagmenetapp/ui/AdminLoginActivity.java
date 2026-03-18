@@ -13,6 +13,7 @@ import com.example.hospimanagmenetapp.R;                     // Resource referen
 import com.example.hospimanagmenetapp.data.AppDatabase;      // Room database singleton
 import com.example.hospimanagmenetapp.data.entities.Staff;   // Staff entity (contains role and PIN)
 import com.example.hospimanagmenetapp.util.SessionManager;   // Simple session storage (SharedPreferences)
+import com.example.hospimanagmenetapp.util.ValidationUtils;
 
 import java.util.concurrent.Executors; // Run DB work off the main thread
 
@@ -69,8 +70,9 @@ public class AdminLoginActivity extends AppCompatActivity { // Screen for admin 
         // Run the lookup off the main thread (Room requirement / UI responsiveness)
         Executors.newSingleThreadExecutor().execute(() -> {
             Staff s = AppDatabase.getInstance(getApplicationContext()).staffDao().findByEmail(email); // Fetch staff by email
+            String hashedPin = ValidationUtils.sha256(pin);
             // Validate: must exist, be ADMIN role, have a stored PIN, and it must match
-            if (s == null || s.role != Staff.Role.ADMIN || s.adminPin == null || !s.adminPin.equals(String.valueOf(pin.hashCode()))) { // Hashed pin comparison
+            if (s == null || s.role != Staff.Role.ADMIN || s.adminPin == null || !s.adminPin.equals(hashedPin)) { // Hashed pin comparison
                 runOnUiThread(() -> Toast.makeText(this, "Invalid admin credentials.", Toast.LENGTH_SHORT).show()); // Show error on UI thread
             } else {
                 // Persist session details and proceed into the Admin Portal

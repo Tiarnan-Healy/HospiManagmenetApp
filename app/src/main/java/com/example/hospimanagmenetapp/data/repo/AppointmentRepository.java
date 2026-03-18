@@ -33,12 +33,16 @@ public class AppointmentRepository {
                 mapped.add(a);
             }
         }
-        // cache to DB (simplified: insert if none today)
+        // Cache network results to Room — skip if already inserted
         for (Appointment a : mapped) {
-            dao.insert(a);
+            try {
+                dao.insert(a);
+            } catch (Exception ignored) {
+                // Record already exists
+            }
         }
-        // return from DB (source of truth)
-        return dao.findBetween(start, end);
+        // return from DB
+        return dao.findBetweenFiltered(start, end, clinic);
     }
 
     public Appointment bookOrReschedule(Appointment appt) throws Exception {
