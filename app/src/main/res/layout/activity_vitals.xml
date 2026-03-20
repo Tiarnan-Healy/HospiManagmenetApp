@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tvVitalsHeader"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:text="Record Vitals"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:importantForAccessibility="yes"
+            android:contentDescription="Record vitals screen" />
+
+        <EditText
+            android:id="@+id/etTemperature"
+            android:hint="Temperature (°C)"
+            android:inputType="numberDecimal"
+            android:layout_marginTop="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="Body temperature in degrees Celsius" />
+
+        <EditText
+            android:id="@+id/etHeartRate"
+            android:hint="Heart Rate (bpm)"
+            android:inputType="number"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="Heart rate in beats per minute" />
+
+        <EditText
+            android:id="@+id/etSystolic"
+            android:hint="Systolic Blood Pressure (mmHg)"
+            android:inputType="number"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="Systolic blood pressure in millimetres of mercury" />
+
+        <EditText
+            android:id="@+id/etDiastolic"
+            android:hint="Diastolic Blood Pressure (mmHg)"
+            android:inputType="number"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="Diastolic blood pressure in millimetres of mercury" />
+
+        <Button
+            android:id="@+id/btnSaveVitals"
+            android:text="Save Vitals"
+            android:layout_marginTop="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="Save vitals reading for this patient" />
+
+    </LinearLayout>
+</ScrollView>

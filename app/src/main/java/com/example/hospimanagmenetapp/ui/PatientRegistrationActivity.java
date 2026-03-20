@@ -2,6 +2,7 @@ package com.example.hospimanagmenetapp.ui; // UI layer package for Activities
 
 import androidx.appcompat.app.AppCompatActivity; // Base class for Activities with AppCompat support
 
+import android.content.Intent;
 import android.os.Bundle;        // Lifecycle state bundle
 import android.text.TextUtils;   // Utility for simple string emptiness checks
 import android.widget.Button;    // UI widget: Button
@@ -12,6 +13,7 @@ import com.example.hospimanagmenetapp.R;                    // Resource IDs (lay
 import com.example.hospimanagmenetapp.data.AppDatabase;     // Room database singleton
 import com.example.hospimanagmenetapp.data.entities.Patient; // Entity to persist
 import com.example.hospimanagmenetapp.util.ValidationUtils; // NHS number validator
+import com.example.hospimanagmenetapp.feature.ehr.ui.PatientSummaryActivity;
 
 import java.util.concurrent.Executors; // For running DB work off the main thread
 
@@ -34,6 +36,24 @@ public class PatientRegistrationActivity extends AppCompatActivity { // Screen t
         btnSave = findViewById(R.id.btnSavePatient);
 
         btnSave.setOnClickListener(v -> savePatient()); // When tapped, validate and persist the patient
+
+        // Button to skip barcode scanning
+        Button btnViewRecord = findViewById(R.id.btnViewRecord);
+        btnViewRecord.setOnClickListener(v -> {
+            String nhs = etNhs.getText().toString().trim();
+
+            // Validate before navigating — same rules as registration
+            if (!ValidationUtils.validateNhsNumber(nhs)) {
+                Toast.makeText(this,
+                        "Enter a valid NHS number to view the record.",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Intent i = new Intent(this, PatientSummaryActivity.class);
+            i.putExtra("nhsNumber", nhs);
+            startActivity(i);
+        });
     }
 
     // Validate inputs and insert the patient into Room on a background thread

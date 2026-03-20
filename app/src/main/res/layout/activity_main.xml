@@ -35,6 +35,14 @@
         android:layout_height="wrap_content"/>
 
     <Button
+        android:id="@+id/btnScanBarcode"
+        android:text="Scan Patient Wristband"
+        android:layout_marginTop="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="Scan a patient wristband barcode to open their record" />
+
+    <Button
         android:id="@+id/btnLogout"
         android:text="Clear Session"
         android:layout_marginTop="12dp"

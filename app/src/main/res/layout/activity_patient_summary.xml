@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- ACCESSIBILITY: contentDescription read by TalkBack -->
+        <TextView
+            android:id="@+id/tvPatientHeader"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:importantForAccessibility="yes"
+            android:contentDescription="Patient identifier" />
+
+        <TextView
+            android:id="@+id/tvProblems"
+            android:text="Problems:"
+            android:layout_marginTop="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:importantForAccessibility="yes"
+            android:contentDescription="Patient problems and conditions" />
+
+        <TextView
+            android:id="@+id/tvAllergies"
+            android:text="Allergies:"
+            android:layout_marginTop="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:importantForAccessibility="yes"
+            android:contentDescription="Patient allergies" />
+
+        <TextView
+            android:id="@+id/tvMedications"
+            android:text="Medications:"
+            android:layout_marginTop="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:importantForAccessibility="yes"
+            android:contentDescription="Current medications" />
+
+        <Button
+            android:id="@+id/btnRecordVitals"
+            android:text="Record Vitals"
+            android:layout_marginTop="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="Open vitals recording screen for this patient" />
+
+        <Button
+            android:id="@+id/btnEditRecord"
+            android:text="Edit Clinical Record"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="Edit this patient's clinical record" />
+
+    </LinearLayout>
+</ScrollView>

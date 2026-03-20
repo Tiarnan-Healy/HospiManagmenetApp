@@ -43,7 +43,8 @@ dependencies { // Libraries this module depends on
     implementation("androidx.recyclerview:recyclerview:1.3.2") // RecyclerView for efficient scrolling lists/grids
 
     // Room (Java -> annotationProcessor)
-    implementation("androidx.room:room-runtime:2.6.1") // Room runtime for SQLite ORM
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation(libs.work.runtime) // Room runtime for SQLite ORM
     annotationProcessor("androidx.room:room-compiler:2.6.1") // Annotation processor generating Room DAOs/entities
 
     // Lifecycle (already had runtime + livedata) + ViewModel for Lab 2
@@ -68,5 +69,19 @@ dependencies { // Libraries this module depends on
     testImplementation(libs.junit) // JUnit 4 for local unit tests
     androidTestImplementation(libs.ext.junit) // AndroidX JUnit extensions for instrumented tests
     androidTestImplementation(libs.espresso.core) // Espresso UI testing framework
+
+    // Lab 3 Add Ons -- --- ----
+    //Paging
+    implementation("androidx.paging:paging-runtime:3.3.2")
+
+    // WorkManager (offline queue)
+    implementation("androidx.work:work-runtime:2.9.1")
+
+    // Barcode scanning (ZXing)
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation("com.google.zxing:core:3.5.3")
+
+    // Accessibility annotations
+    implementation("androidx.annotation:annotation:1.9.1")
 
 }

@@ -12,6 +12,14 @@ import com.example.hospimanagmenetapp.ui.AdminPortalActivity;       // Screen fo
 import com.example.hospimanagmenetapp.ui.PatientRegistrationActivity; // Screen to register patients
 import com.example.hospimanagmenetapp.util.SessionManager;          // Helper for simple session storage
 
+import androidx.work.Constraints;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.NetworkType;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+import com.example.hospimanagmenetapp.feature.ehr.work.VitalsSyncWorker;
+import java.util.concurrent.TimeUnit;
+
 public class MainActivity extends AppCompatActivity { // Entry Activity shown at app launch
 
     private TextView tvWelcome;       // Header showing session state
@@ -46,12 +54,32 @@ public class MainActivity extends AppCompatActivity { // Entry Activity shown at
         btnAppointments.setOnClickListener(v ->
                 startActivity(new Intent(this, com.example.hospimanagmenetapp.feature.appointments.ui.AppointmentActivity.class)));
 
+        Button btnScanBarcode = findViewById(R.id.btnScanBarcode);
+        btnScanBarcode.setOnClickListener(v ->
+                startActivity(new Intent(this,
+                        com.example.hospimanagmenetapp.feature.ehr.ui.BarcodeScannerActivity.class)));
 
         // Clear session and update the header (acts like a simple "log out")
         btnLogout.setOnClickListener(v -> {
             SessionManager.clear(this); // Remove stored role/email
             refreshHeader();            // Reflect the logged-out state in the UI
         });
+
+        Constraints syncConstraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
+
+        PeriodicWorkRequest syncRequest =
+                new PeriodicWorkRequest.Builder(
+                        VitalsSyncWorker.class,
+                        1, TimeUnit.HOURS)
+                        .setConstraints(syncConstraints)
+                        .build();
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+                "vitals_sync",
+                ExistingPeriodicWorkPolicy.KEEP,
+                syncRequest);
     }
 
     // Update the welcome header with the current session info

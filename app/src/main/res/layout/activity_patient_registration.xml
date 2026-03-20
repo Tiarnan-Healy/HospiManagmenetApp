@@ -41,6 +41,14 @@
             <Button android:id="@+id/btnSavePatient" android:text="Save Patient"
                 android:layout_marginTop="16dp"
                 android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+            <Button
+                android:id="@+id/btnViewRecord"
+                android:text="View Patient Record"
+                android:layout_marginTop="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:contentDescription="View the EHR summary for the entered NHS number" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

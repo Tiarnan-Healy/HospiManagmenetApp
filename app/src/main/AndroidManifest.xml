@@ -5,6 +5,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Lab 2: Biometric -->
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <!-- Lab3: QR -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
 
     <application
         android:allowBackup="false"
@@ -42,5 +45,25 @@
             android:exported="false"
             android:parentActivityName=".MainActivity" />
 
+        <!-- Lab 3: EHR screens -->
+        <activity
+            android:name=".feature.ehr.ui.PatientSummaryActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".feature.ehr.ui.VitalsActivity"
+            android:exported="false"
+            android:parentActivityName=".feature.ehr.ui.PatientSummaryActivity" />
+
+        <activity
+            android:name=".feature.ehr.ui.EditClinicalRecordActivity"
+            android:exported="false"
+            android:parentActivityName=".feature.ehr.ui.PatientSummaryActivity" />
+
+        <activity
+            android:name=".feature.ehr.ui.BarcodeScannerActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
     </application>
 </manifest>

@@ -77,4 +77,18 @@ public class ValidationUtils { // Simple holder for validation helper methods
             throw new RuntimeException("SHA-256 algorithm unavailable", e);
         }
     }
+
+    public static String sanitiseInput(String input) {
+        if (input == null) return "";
+
+        return input
+                // Remove HTML/XSS injection characters
+                .replaceAll("[<>\"']", "")
+                // Remove SQL statement terminators
+                .replaceAll(";", "")
+                // Remove common SQL keywords (case-insensitive)
+                // (?i) enables case-insensitive matching for the whole group
+                .replaceAll("(?i)(drop|delete|insert|update|select|union|exec|alter|create)", "")
+                .trim();
+    }
 }

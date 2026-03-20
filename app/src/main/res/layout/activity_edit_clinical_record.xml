@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tvEditHeader"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:text="Edit Clinical Record"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:importantForAccessibility="yes"
+            android:contentDescription="Edit clinical record screen" />
+
+        <EditText
+            android:id="@+id/etProblems"
+            android:hint="Problems / Conditions"
+            android:inputType="textMultiLine"
+            android:minLines="2"
+            android:layout_marginTop="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="Patient problems and conditions" />
+
+        <EditText
+            android:id="@+id/etAllergies"
+            android:hint="Allergies"
+            android:inputType="textMultiLine"
+            android:minLines="2"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="Patient allergies" />
+
+        <EditText
+            android:id="@+id/etMedications"
+            android:hint="Medications"
+            android:inputType="textMultiLine"
+            android:minLines="2"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="Current medications" />
+
+        <Button
+            android:id="@+id/btnSaveRecord"
+            android:text="Save Record"
+            android:layout_marginTop="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="Save changes to this patient's clinical record" />
+
+    </LinearLayout>
+</ScrollView>
