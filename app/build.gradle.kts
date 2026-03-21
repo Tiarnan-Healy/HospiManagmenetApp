@@ -73,6 +73,7 @@ dependencies { // Libraries this module depends on
     // Lab 3 Add Ons -- --- ----
     //Paging
     implementation("androidx.paging:paging-runtime:3.3.2")
+    implementation("androidx.room:room-paging:2.6.1")
 
     // WorkManager (offline queue)
     implementation("androidx.work:work-runtime:2.9.1")

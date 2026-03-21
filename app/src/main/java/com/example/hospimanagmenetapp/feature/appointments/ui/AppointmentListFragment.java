@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.hospimanagmenetapp.R;
 import com.example.hospimanagmenetapp.data.entities.Appointment;
@@ -26,45 +27,84 @@ public class AppointmentListFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_appointment_list, container, false);
+
         spClinic = v.findViewById(R.id.spClinic);
         progress = v.findViewById(R.id.progress);
-        rv = v.findViewById(R.id.rvAppointments);
+        rv       = v.findViewById(R.id.rvAppointments);
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
+
         ArrayAdapter<String> clinics = new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_spinner_dropdown_item,
-                new String[]{"All Clinics","Surgery A","Surgery B"});
+                new String[]{"All Clinics", "Surgery A", "Surgery B"});
         spClinic.setAdapter(clinics);
 
         v.findViewById(R.id.btnRefresh).setOnClickListener(b -> loadData());
+
         loadData();
         return v;
     }
 
     private void loadData() {
         progress.setVisibility(View.VISIBLE);
-        String clinic = spClinic.getSelectedItemPosition() == 0 ? null : spClinic.getSelectedItem().toString();
 
+        // Old method, pre pagination
+//        // Build adapter with click handler navigating to BookingFragment
+//        AppointmentAdapter adapter = new AppointmentAdapter(item -> {
+//            BookingFragment f = BookingFragment.newInstance(item);
+//            requireActivity().getSupportFragmentManager()
+//                    .beginTransaction()
+//                    .replace(R.id.appointmentContainer, f)
+//                    .addToBackStack(null)
+//                    .commit();
+//        });
+//
+//        rv.setAdapter(adapter);
+//
+//        // Obtain ViewModel scoped to this fragment's lifecycle
+//        AppointmentViewModel viewModel = new ViewModelProvider(this).get(
+//                AppointmentViewModel.class);
+//
+//        // Observe LiveData — submitData feeds pages to the PagingDataAdapter
+//        viewModel.pagedAppointments.observe(getViewLifecycleOwner(), pagingData -> {
+//            progress.setVisibility(View.GONE);
+//            adapter.submitData(getLifecycle(), pagingData);
+//        });
+
+        // New method, populate Room as appointment screen empty otherwise
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
-                List<Appointment> list = new GetTodaysAppointmentsUseCase(requireContext()).execute(clinic);
-                requireActivity().runOnUiThread(() -> {
-                    progress.setVisibility(View.GONE);
-                    rv.setAdapter(new AppointmentAdapter(list, item -> {
-                        BookingFragment f = BookingFragment.newInstance(item);
-                        requireActivity().getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.appointmentContainer, f)
-                                .addToBackStack(null)
-                                .commit();
-                    }));
-                });
+                new GetTodaysAppointmentsUseCase(requireContext()).execute(null);
             } catch (Exception e) {
-                requireActivity().runOnUiThread(() -> {
-                    progress.setVisibility(View.GONE);
-                    Toast.makeText(getContext(), "Failed to load. Please retry.", Toast.LENGTH_LONG).show();
-                });
+                // Seeding failed — Room may already have data from a previous
+                // session so continue anyway rather than blocking the UI
+                android.util.Log.w("AppointmentList", "Seed step failed — using cached data.");
             }
+
+            // Step 2 — observe paged data from ViewModel on the main thread
+            requireActivity().runOnUiThread(() -> observePagedData());
+        });
+    }
+    private void observePagedData() {
+        AppointmentAdapter adapter = new AppointmentAdapter(item -> {
+            BookingFragment f = BookingFragment.newInstance(item);
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.appointmentContainer, f)
+                    .addToBackStack(null)
+                    .commit();
+        });
+
+        rv.setAdapter(adapter);
+
+        AppointmentViewModel viewModel = new ViewModelProvider(this)
+                .get(AppointmentViewModel.class);
+
+        viewModel.pagedAppointments.observe(getViewLifecycleOwner(), pagingData -> {
+            progress.setVisibility(View.GONE);
+            adapter.submitData(getLifecycle(), pagingData);
         });
     }
 }

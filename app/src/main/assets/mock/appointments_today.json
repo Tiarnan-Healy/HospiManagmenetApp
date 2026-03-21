@@ -2,8 +2,8 @@
   {
     "id": 1,
     "patientNhsNumber": "9434765919",
-    "startTime": 1773792000000,
-    "endTime": 1773878399000,
+    "startTime": 1774051200000,
+    "endTime": 1774137599000,
     "clinicianId": 101,
     "clinicianName": "Dr. Smith",
     "clinic": "Surgery A",
@@ -12,8 +12,8 @@
   {
     "id": 2,
     "patientNhsNumber": "9434765919",
-    "startTime": 1773792000000,
-    "endTime": 1773878399000,
+    "startTime": 1774051200000,
+    "endTime": 1774137599000,
     "clinicianId": 102,
     "clinicianName": "Dr. Jones",
     "clinic": "Surgery B",
@@ -22,8 +22,218 @@
   {
     "id": 3,
     "patientNhsNumber": "9434765919",
-    "startTime": 1773878400000,
-    "endTime": 1773964799000,
+    "startTime": 1774051200000,
+    "endTime": 1774137599000,
+    "clinicianId": 102,
+    "clinicianName": "Dr. Jones",
+    "clinic": "Surgery B",
+    "status": "BOOKED"
+  },
+  {
+    "id": 4,
+    "patientNhsNumber": "9434765919",
+    "startTime": 1774051200000,
+    "endTime": 1774137599000,
+    "clinicianId": 101,
+    "clinicianName": "Dr. Smith",
+    "clinic": "Surgery A",
+    "status": "BOOKED"
+  },
+  {
+    "id": 5,
+    "patientNhsNumber": "9434765919",
+    "startTime": 1774051200000,
+    "endTime": 1774137599000,
+    "clinicianId": 102,
+    "clinicianName": "Dr. Jones",
+    "clinic": "Surgery B",
+    "status": "BOOKED"
+  },
+  {
+    "id": 6,
+    "patientNhsNumber": "9434765919",
+    "startTime": 1774051200000,
+    "endTime": 1774137599000,
+    "clinicianId": 102,
+    "clinicianName": "Dr. Jones",
+    "clinic": "Surgery B",
+    "status": "BOOKED"
+  },
+  {
+    "id": 7,
+    "patientNhsNumber": "9434765919",
+    "startTime": 1774051200000,
+    "endTime": 1774137599000,
+    "clinicianId": 101,
+    "clinicianName": "Dr. Smith",
+    "clinic": "Surgery A",
+    "status": "BOOKED"
+  },
+  {
+    "id": 8,
+    "patientNhsNumber": "9434765919",
+    "startTime": 1774051200000,
+    "endTime": 1774137599000,
+    "clinicianId": 102,
+    "clinicianName": "Dr. Jones",
+    "clinic": "Surgery B",
+    "status": "BOOKED"
+  },
+  {
+    "id": 9,
+    "patientNhsNumber": "9434765919",
+    "startTime": 1774051200000,
+    "endTime": 1774137599000,
+    "clinicianId": 102,
+    "clinicianName": "Dr. Jones",
+    "clinic": "Surgery B",
+    "status": "BOOKED"
+  },
+  {
+    "id": 10,
+    "patientNhsNumber": "9434765919",
+    "startTime": 1774051200000,
+    "endTime": 1774137599000,
+    "clinicianId": 101,
+    "clinicianName": "Dr. Smith",
+    "clinic": "Surgery A",
+    "status": "BOOKED"
+  },
+  {
+    "id": 11,
+    "patientNhsNumber": "9434765919",
+    "startTime": 1774051200000,
+    "endTime": 1774137599000,
+    "clinicianId": 102,
+    "clinicianName": "Dr. Jones",
+    "clinic": "Surgery B",
+    "status": "BOOKED"
+  },
+  {
+    "id": 12,
+    "patientNhsNumber": "9434765919",
+    "startTime": 1774051200000,
+    "endTime": 1774137599000,
+    "clinicianId": 102,
+    "clinicianName": "Dr. Jones",
+    "clinic": "Surgery B",
+    "status": "BOOKED"
+  },
+  {
+  "id": 13,
+  "patientNhsNumber": "9434765919",
+  "startTime": 1774051200000,
+  "endTime": 1774137599000,
+  "clinicianId": 101,
+  "clinicianName": "Dr. Smith",
+  "clinic": "Surgery A",
+  "status": "BOOKED"
+  },
+  {
+    "id": 14,
+    "patientNhsNumber": "9434765919",
+    "startTime": 1774051200000,
+    "endTime": 1774137599000,
+    "clinicianId": 102,
+    "clinicianName": "Dr. Jones",
+    "clinic": "Surgery B",
+    "status": "BOOKED"
+  },
+  {
+    "id": 15,
+    "patientNhsNumber": "9434765919",
+    "startTime": 1774051200000,
+    "endTime": 1774137599000,
+    "clinicianId": 102,
+    "clinicianName": "Dr. Jones",
+    "clinic": "Surgery B",
+    "status": "BOOKED"
+  },
+  {
+    "id": 16,
+    "patientNhsNumber": "9434765919",
+    "startTime": 1774051200000,
+    "endTime": 1774137599000,
+    "clinicianId": 101,
+    "clinicianName": "Dr. Smith",
+    "clinic": "Surgery A",
+    "status": "BOOKED"
+  },
+  {
+    "id": 17,
+    "patientNhsNumber": "9434765919",
+    "startTime": 1774051200000,
+    "endTime": 1774137599000,
+    "clinicianId": 102,
+    "clinicianName": "Dr. Jones",
+    "clinic": "Surgery B",
+    "status": "BOOKED"
+  },
+  {
+    "id": 18,
+    "patientNhsNumber": "9434765919",
+    "startTime": 1774051200000,
+    "endTime": 1774137599000,
+    "clinicianId": 102,
+    "clinicianName": "Dr. Jones",
+    "clinic": "Surgery B",
+    "status": "BOOKED"
+  },
+  {
+    "id": 19,
+    "patientNhsNumber": "9434765919",
+    "startTime": 1774051200000,
+    "endTime": 1774137599000,
+    "clinicianId": 101,
+    "clinicianName": "Dr. Smith",
+    "clinic": "Surgery A",
+    "status": "BOOKED"
+  },
+  {
+    "id": 20,
+    "patientNhsNumber": "9434765919",
+    "startTime": 1774051200000,
+    "endTime": 1774137599000,
+    "clinicianId": 102,
+    "clinicianName": "Dr. Jones",
+    "clinic": "Surgery B",
+    "status": "BOOKED"
+  },
+  {
+    "id": 21,
+    "patientNhsNumber": "9434765919",
+    "startTime": 1774051200000,
+    "endTime": 1774137599000,
+    "clinicianId": 102,
+    "clinicianName": "Dr. Jones",
+    "clinic": "Surgery B",
+    "status": "BOOKED"
+  },
+  {
+    "id": 22,
+    "patientNhsNumber": "9434765919",
+    "startTime": 1774051200000,
+    "endTime": 1774137599000,
+    "clinicianId": 101,
+    "clinicianName": "Dr. Smith",
+    "clinic": "Surgery A",
+    "status": "BOOKED"
+  },
+  {
+    "id": 23,
+    "patientNhsNumber": "9434765919",
+    "startTime": 1774051200000,
+    "endTime": 1774137599000,
+    "clinicianId": 102,
+    "clinicianName": "Dr. Jones",
+    "clinic": "Surgery B",
+    "status": "BOOKED"
+  },
+  {
+    "id": 24,
+    "patientNhsNumber": "9434765919",
+    "startTime": 1774051200000,
+    "endTime": 1774137599000,
     "clinicianId": 102,
     "clinicianName": "Dr. Jones",
     "clinic": "Surgery B",
