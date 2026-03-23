@@ -2,6 +2,7 @@ package com.example.hospimanagmenetapp.feature.ehr.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 import com.example.hospimanagmenetapp.R;
 import com.example.hospimanagmenetapp.data.AppDatabase;
 import com.example.hospimanagmenetapp.data.entities.ClinicalRecord;
+import com.example.hospimanagmenetapp.security.SecurityAgent;
 import com.example.hospimanagmenetapp.util.ValidationUtils;
 
 import java.util.concurrent.Executors;
@@ -31,6 +33,8 @@ public class PatientSummaryActivity extends AppCompatActivity {
 
     private TextView tvHeader, tvProblems, tvAllergies, tvMedications;
     private String nhsNumber;
+
+    private SecurityAgent securityAgent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +86,7 @@ public class PatientSummaryActivity extends AppCompatActivity {
 
     // Fetches the clinical record from Room on a background thread.
     // SECURITY: Results are displayed only — never logged.
+    @SuppressLint("SetTextI18n")
     private void loadRecord() {
         Executors.newSingleThreadExecutor().execute(() -> {
             ClinicalRecord record = AppDatabase.getInstance(getApplicationContext())
@@ -89,9 +94,14 @@ public class PatientSummaryActivity extends AppCompatActivity {
 
             runOnUiThread(() -> {
                 if (record != null) {
-                    tvProblems.setText("Problems: " + record.problems);
-                    tvAllergies.setText("Allergies: " + record.allergies);
-                    tvMedications.setText("Medications: " + record.medications);
+                    // decrypt fields before display
+                    String problems    = securityAgent.decrypt(record.problems);
+                    String allergies   = securityAgent.decrypt(record.allergies);
+                    String medications = securityAgent.decrypt(record.medications);
+
+                    tvProblems.setText("Problems: " + problems);
+                    tvAllergies.setText("Allergies: " + allergies);
+                    tvMedications.setText("Medications: " + medications);
                 } else {
                     tvProblems.setText("No clinical record found.");
                     tvAllergies.setText("");

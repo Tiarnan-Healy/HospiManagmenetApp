@@ -11,36 +11,34 @@ import com.example.hospimanagmenetapp.R;
 import com.example.hospimanagmenetapp.data.AppDatabase;
 import com.example.hospimanagmenetapp.data.entities.ClinicalRecord;
 import com.example.hospimanagmenetapp.util.ValidationUtils;
+import com.example.hospimanagmenetapp.security.SecurityAgent;
 
 import java.util.concurrent.Executors;
 
-/**
- * Allows authorised staff to create or update a patient's clinical record.
- *
- * Uses upsert (REPLACE strategy) so creating and editing are the same
- * operation — if a record exists for this NHS number it is updated,
- * otherwise a new one is created.
- *
- * SECURITY:
- * - NHS number comes from Intent only — never user input
- * - All free-text fields sanitised with ValidationUtils.sanitiseInput()
- *   before being written to Room — defence-in-depth against injection
- * - No field values are logged at any point
- *
- * RBAC NOTE:
- * This screen should only be accessible to CLINICIAN and ADMIN roles.
- * A full RBAC gate using RbacPolicyEvaluator is the recommended
- * enhancement for Lab 4.
- */
+
+// Allows authorised staff to create or update a patient's clinical record.
+
 public class EditClinicalRecordActivity extends AppCompatActivity {
 
     private EditText etProblems, etAllergies, etMedications;
     private String nhsNumber;
+    private SecurityAgent securityAgent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_clinical_record);
+
+        try {
+            securityAgent = new SecurityAgent();
+        } catch (Exception e) {
+            android.util.Log.e("EditClinicalRecord", "SecurityAgent init failed.");
+            Toast.makeText(this,
+                    "Security initialisation failed. Cannot edit records.",
+                    Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
 
         etProblems    = findViewById(R.id.etProblems);
         etAllergies   = findViewById(R.id.etAllergies);
@@ -61,10 +59,8 @@ public class EditClinicalRecordActivity extends AppCompatActivity {
         btnSave.setOnClickListener(v -> saveRecord());
     }
 
-    /**
-     * Loads any existing clinical record into the form fields.
-     * If no record exists the fields remain empty — saving will create one.
-     */
+    // Loads any existing clinical record into the form fields.
+
     private void loadExistingRecord() {
         Executors.newSingleThreadExecutor().execute(() -> {
             ClinicalRecord existing = AppDatabase.getInstance(getApplicationContext())
@@ -80,14 +76,7 @@ public class EditClinicalRecordActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Sanitises inputs and upserts the clinical record to Room.
-     *
-     * SECURITY: sanitiseInput() strips injection characters from all
-     * free-text clinical fields before they reach the database.
-     * Room's parameterised queries provide the primary injection defence —
-     * sanitiseInput() is the secondary layer.
-     */
+    // Sanitises inputs and upserts the clinical record to Room.
     private void saveRecord() {
         // Sanitise all free-text inputs before storage
         String problems    = ValidationUtils.sanitiseInput(
@@ -99,9 +88,9 @@ public class EditClinicalRecordActivity extends AppCompatActivity {
 
         ClinicalRecord record = new ClinicalRecord();
         record.patientNhs  = nhsNumber;
-        record.problems    = problems;
-        record.allergies   = allergies;
-        record.medications = medications;
+        record.problems    = securityAgent.encrypt(problems);
+        record.allergies   = securityAgent.encrypt(allergies);
+        record.medications = securityAgent.encrypt(medications);
         record.updatedAt   = System.currentTimeMillis();
 
         Executors.newSingleThreadExecutor().execute(() -> {
