@@ -23,14 +23,13 @@ public class AppointmentRepository {
         this.api = new ApiClient(ctx);
     }
 
-    public List<Appointment> getTodaysAppointments(String clinic, long start, long end) throws Exception {
+    public List<Appointment> getTodaysAppointments(String clinic, String specialty, long start, long end) throws Exception {
         // fetch mock network first
         Response<List<AppointmentDto>> resp = api.appointmentApi().getTodaysAppointments(clinic).execute();
         List<Appointment> mapped = new ArrayList<>();
         if (resp.isSuccessful() && resp.body() != null) {
             for (AppointmentDto dto : resp.body()) {
-                Appointment a = map(dto);
-                mapped.add(a);
+                mapped.add(map(dto));
             }
         }
         // Cache network results to Room — skip if already inserted
@@ -42,7 +41,7 @@ public class AppointmentRepository {
             }
         }
         // return from DB
-        return dao.findBetweenFiltered(start, end, clinic);
+        return dao.findBetweenFiltered(start, end, clinic, specialty);
     }
 
     public Appointment bookOrReschedule(Appointment appt) throws Exception {

@@ -3,10 +3,8 @@ package com.example.hospimanagmenetapp.feature.appointments.ui.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.TextView;
 
-import androidx.paging.PagingDataAdapter;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,39 +16,24 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+// Simple RecyclerView adapter for displaying a filtered list of appointments.
+// Used by AppointmentListFragment when clinic or specialty filters are applied.
+// AppointmentAdapter (PagingDataAdapter) handles the unfiltered paginated view —
+// PagingDataAdapter cannot accept a plain List so a standard adapter is needed
+// for filtered results returned directly from Room.
 
-// RecyclerView adapter backed by the Paging library.
-
-public class AppointmentAdapter
-        extends PagingDataAdapter<Appointment, AppointmentAdapter.VH> {
+public class SimpleAppointmentAdapter
+        extends RecyclerView.Adapter<SimpleAppointmentAdapter.VH> {
 
     public interface Clicker { void onClick(Appointment a); }
 
+    private final List<Appointment> data;
     private final Clicker clicker;
     private final SimpleDateFormat sdf =
             new SimpleDateFormat("dd MMM yyyy HH:mm", Locale.UK);
 
-
-//     DiffUtil callback — required by PagingDataAdapter.
-    private static final DiffUtil.ItemCallback<Appointment> DIFF_CALLBACK =
-            new DiffUtil.ItemCallback<Appointment>() {
-                @Override
-                public boolean areItemsTheSame(
-                        @NonNull Appointment oldItem, @NonNull Appointment newItem) {
-                    return oldItem.id == newItem.id;
-                }
-
-                @Override
-                public boolean areContentsTheSame(
-                        @NonNull Appointment oldItem, @NonNull Appointment newItem) {
-                    return oldItem.status.equals(newItem.status)
-                            && oldItem.startTime == newItem.startTime
-                            && oldItem.endTime == newItem.endTime;
-                }
-            };
-
-    public AppointmentAdapter(List<Appointment> filtered, Clicker clicker) {
-        super(DIFF_CALLBACK);
+    public SimpleAppointmentAdapter(List<Appointment> data, Clicker clicker) {
+        this.data    = data;
         this.clicker = clicker;
     }
 
@@ -64,16 +47,17 @@ public class AppointmentAdapter
 
     @Override
     public void onBindViewHolder(@NonNull VH h, int position) {
-        // getItem() is provided by PagingDataAdapter — may return null
-        // while the next page is loading; guard against this
-        Appointment a = getItem(position);
-        if (a == null) return;
-
+        Appointment a = data.get(position);
         h.tvPatient.setText("NHS: " + a.patientNhsNumber);
-        h.tvClinician.setText(a.clinicianName + " — " + a.clinic);
+        h.tvClinician.setText(a.clinicianName + " - " + a.clinic);
         h.tvTime.setText(sdf.format(new Date(a.startTime))
                 + " → " + sdf.format(new Date(a.endTime)));
         h.itemView.setOnClickListener(v -> clicker.onClick(a));
+    }
+
+    @Override
+    public int getItemCount() {
+        return data == null ? 0 : data.size();
     }
 
     static class VH extends RecyclerView.ViewHolder {

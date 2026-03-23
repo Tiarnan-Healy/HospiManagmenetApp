@@ -18,4 +18,18 @@
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
-#-renamesourcefileattribute SourceFile
+-renamesourcefileattribute SourceFile
+
+# Implementing ProGuard for obfuscation/security
+# Keep Room entities, R8 must not rename these as Room relies on field names
+-keep class com.example.hospimanagmenetapp.data.entities.** { *; }
+
+# Keep DAOs as Room annotation processor generates implementations by name
+-keep interface com.example.hospimanagmenetapp.data.dao.** { *; }
+
+# Keep Retrofit DTOs, Gson uses field names for JSON deserialisation
+-keep class com.example.hospimanagmenetapp.network.dto.** { *; }
+
+# Keep ZXing barcode scanner
+-keep class com.journeyapps.** { *; }
+-keep class com.google.zxing.** { *; }

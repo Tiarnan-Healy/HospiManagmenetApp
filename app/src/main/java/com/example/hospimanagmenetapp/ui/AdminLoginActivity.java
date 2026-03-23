@@ -12,6 +12,7 @@ import android.widget.Toast;    // Lightweight on-screen notifications
 import com.example.hospimanagmenetapp.R;                     // Resource references (layouts, IDs, strings)
 import com.example.hospimanagmenetapp.data.AppDatabase;      // Room database singleton
 import com.example.hospimanagmenetapp.data.entities.Staff;   // Staff entity (contains role and PIN)
+import com.example.hospimanagmenetapp.security.ThreatMonitor;
 import com.example.hospimanagmenetapp.util.SessionManager;   // Simple session storage (SharedPreferences)
 import com.example.hospimanagmenetapp.util.ValidationUtils;
 
@@ -58,6 +59,13 @@ public class AdminLoginActivity extends AppCompatActivity { // Screen for admin 
 
     // Validate inputs and perform admin login using background DB lookup
     private void doLogin() {
+        if (ThreatMonitor.getInstance().isAccountLocked()) {
+            Toast.makeText(this,
+                    "Account locked due to multiple failed attempts. Contact your administrator.",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+
         String email = etEmail.getText().toString().trim(); // Read/trim email
         String pin = etPin.getText().toString().trim();     // Read/trim PIN
 
@@ -74,9 +82,11 @@ public class AdminLoginActivity extends AppCompatActivity { // Screen for admin 
             // Validate: must exist, be ADMIN role, have a stored PIN, and it must match
             if (s == null || s.role != Staff.Role.ADMIN || s.adminPin == null || !s.adminPin.equals(hashedPin)) { // Hashed pin comparison
                 runOnUiThread(() -> Toast.makeText(this, "Invalid admin credentials.", Toast.LENGTH_SHORT).show()); // Show error on UI thread
+                ThreatMonitor.getInstance().recordFailedLogin();
             } else {
                 // Persist session details and proceed into the Admin Portal
                 SessionManager.setCurrentUser(this, "ADMIN", s.email); // Store role/email for later checks
+                ThreatMonitor.getInstance().recordSuccessfulLogin();
                 Intent i = new Intent(this, AdminPortalActivity.class); // Navigate to the portal proper
                 startActivity(i);
                 finish(); // Close login screen after success

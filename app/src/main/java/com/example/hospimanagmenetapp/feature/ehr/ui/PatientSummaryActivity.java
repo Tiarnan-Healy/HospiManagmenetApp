@@ -15,22 +15,18 @@ import com.example.hospimanagmenetapp.util.ValidationUtils;
 
 import java.util.concurrent.Executors;
 
-/**
- * Displays the EHR summary for a single patient, identified by NHS number.
- *
- * Navigated to from:
- *   - BarcodeScannerActivity (scan wristband → NHS number → this screen)
- *   - PatientRegistrationActivity (view record button)
- *
- * SECURITY:
- * - NHS number is received via Intent extra, never from user text input
- * - Clinical data is only displayed — never logged
- * - RBAC check should be added here in Lab 4 to restrict to CLINICIAN/ADMIN
- *
- * ACCESSIBILITY:
- * - All TextViews have contentDescription set in the layout
- * - TalkBack will read clinical field labels and values correctly
- */
+// Displays the EHR summary for a single patient, identified by NHS number.
+// Navigated to from:
+//   - BarcodeScannerActivity (scan wristband → NHS number → this screen)
+//   - PatientRegistrationActivity (view record button)
+// SECURITY:
+// - NHS number is received via Intent extra, never from user text input
+// - Clinical data is only displayed — never logged
+// - RBAC check should be added here in Lab 4 to restrict to CLINICIAN/ADMIN
+// ACCESSIBILITY:
+// - All TextViews have contentDescription set in the layout
+// - TalkBack will read clinical field labels and values correctly
+
 public class PatientSummaryActivity extends AppCompatActivity {
 
     private TextView tvHeader, tvProblems, tvAllergies, tvMedications;

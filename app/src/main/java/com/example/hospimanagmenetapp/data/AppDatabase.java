@@ -15,6 +15,10 @@ import com.example.hospimanagmenetapp.data.entities.Patient; // Entity mapped to
 import com.example.hospimanagmenetapp.data.entities.Staff;   // Entity mapped to a table
 import com.example.hospimanagmenetapp.data.entities.ClinicalRecord;
 import com.example.hospimanagmenetapp.data.entities.Vitals;
+
+import net.sqlcipher.database.SQLiteDatabase;
+import net.sqlcipher.database.SupportFactory;
+
 @Database(entities = {Patient.class, Staff.class, Appointment.class, ClinicalRecord.class, Vitals.class}, version = 3, exportSchema = false)
 //  Declares the Room database: which entities it manages, the schema version,
 //   and whether to export the schema as JSON for tooling (false = do not export).
@@ -30,21 +34,43 @@ public abstract class AppDatabase extends RoomDatabase { // Concrete DB extends 
     public abstract ClinicalRecordDao clinicalRecordDao(); // Lab 3
     public abstract VitalsDao vitalsDao();                 // Lab 3
 
-    // Thread-safe double-checked locking to get/create the singleton DB
+    // Commenting out old method for now in case new one fails
+//    // Thread-safe double-checked locking to get/create the singleton DB
+//    public static AppDatabase getInstance(Context context) {
+//        if (INSTANCE == null) { // Fast path: already created?
+//            synchronized (AppDatabase.class) { // Serialise creation across threads
+//                if (INSTANCE == null) { // Second check inside the lock
+//                    INSTANCE = Room.databaseBuilder(
+//                                    context.getApplicationContext(), // Use app Context to avoid Activity leaks
+//                                    AppDatabase.class,               // The RoomDatabase subclass to create
+//                                    "hms_db"                         // On-device filename for the DB
+//                            )
+//
+//                            .fallbackToDestructiveMigration()       // Wipes & rebuilds on version change if no migration (dev-friendly, data-loss risk)
+//                            .build();                               // Build the database instance
+//                }
+//            }
+//        }
     public static AppDatabase getInstance(Context context) {
-        if (INSTANCE == null) { // Fast path: already created?
-            synchronized (AppDatabase.class) { // Serialise creation across threads
-                if (INSTANCE == null) { // Second check inside the lock
-                    INSTANCE = Room.databaseBuilder(
-                                    context.getApplicationContext(), // Use app Context to avoid Activity leaks
-                                    AppDatabase.class,               // The RoomDatabase subclass to create
-                                    "hms_db"                         // On-device filename for the DB
-                            )
-                            .fallbackToDestructiveMigration()       // Wipes & rebuilds on version change if no migration (dev-friendly, data-loss risk)
-                            .build();                               // Build the database instance
+        if (INSTANCE == null) {
+            synchronized (AppDatabase.class) {
+                if (INSTANCE == null) {
+                SQLiteDatabase.loadLibs(context);
+                byte[] passphrase = SQLiteDatabase
+                        .getBytes("hms_secure_key_lab4".toCharArray());
+                SupportFactory factory = new SupportFactory(passphrase);
+
+                INSTANCE = Room.databaseBuilder(
+                        context.getApplicationContext(),
+                AppDatabase.class,
+                        "hms_db"
+                        )
+                        .openHelperFactory(factory)
+                                    .fallbackToDestructiveMigration()
+                                    .build();
+                    }
                 }
-            }
-        }
+}
         return INSTANCE; // Return the shared database
     }
 }

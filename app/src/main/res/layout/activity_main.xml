@@ -16,6 +16,7 @@
     <Button
         android:id="@+id/btnPatientRegistration"
         android:text="Patient Registration"
+        android:contentDescription="Open patient registration form"
         android:layout_marginTop="24dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -23,6 +24,7 @@
     <Button
         android:id="@+id/btnAdminPortal"
         android:text="Admin Portal"
+        android:contentDescription="Open administrator login portal"
         android:layout_marginTop="12dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -30,6 +32,7 @@
     <Button
         android:id="@+id/btnAppointments"
         android:text="Appointments"
+        android:contentDescription="Open appointments screen"
         android:layout_marginTop="12dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
@@ -45,6 +48,7 @@
     <Button
         android:id="@+id/btnLogout"
         android:text="Clear Session"
+        android:contentDescription="Clear current session and log out"
         android:layout_marginTop="12dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

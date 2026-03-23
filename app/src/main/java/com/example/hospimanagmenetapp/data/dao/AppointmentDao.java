@@ -32,4 +32,11 @@ public interface AppointmentDao {
 
     @Query("SELECT * FROM appointments ORDER BY startTime ASC")
     androidx.paging.PagingSource<Integer, Appointment> getAllPaged();
+
+    @Query("SELECT * FROM appointments " +
+            "WHERE startTime BETWEEN :start AND :end " +
+            "AND (:clinic IS NULL OR clinic = :clinic) " +
+            "AND (:specialty IS NULL OR clinicianName LIKE '%' || :specialty || '%') " +
+            "ORDER BY startTime ASC")
+    List<Appointment> findBetweenFiltered(long start, long end, String clinic, String specialty);
 }

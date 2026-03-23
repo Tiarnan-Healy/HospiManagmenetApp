@@ -7,6 +7,7 @@ import android.os.Bundle;       // Holds saved instance state for lifecycle
 import android.widget.Button;   // UI widget: Button
 import android.widget.TextView; // UI widget: TextView
 
+import com.example.hospimanagmenetapp.security.ThreatMonitor;
 import com.example.hospimanagmenetapp.ui.AdminLoginActivity;        // Screen for admin sign-in
 import com.example.hospimanagmenetapp.ui.AdminPortalActivity;       // Screen for admin features (opened after login)
 import com.example.hospimanagmenetapp.ui.PatientRegistrationActivity; // Screen to register patients
@@ -30,6 +31,8 @@ public class MainActivity extends AppCompatActivity { // Entry Activity shown at
         super.onCreate(savedInstanceState);              // Always call the superclass first
         setContentView(R.layout.activity_main);          // Inflate the layout defined in activity_main.xml
 
+        ThreatMonitor.getInstance().startPeriodicIntegrityCheck(getApplicationContext());
+        
         // Bind views from the layout to fields
         tvWelcome = findViewById(R.id.tvWelcome);
         btnPatientRegistration = findViewById(R.id.btnPatientRegistration);

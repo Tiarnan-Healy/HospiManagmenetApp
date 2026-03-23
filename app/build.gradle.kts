@@ -15,7 +15,8 @@ android { // Android-specific build configuration for the app module
 
     buildTypes { // Definitions of build variants like debug/release
         release { // Settings for the release (shipping) build
-            isMinifyEnabled = false // Disable code shrinking/obfuscation (set true for production usually)
+            isMinifyEnabled = true // Enabling proguard/r8
+            isShrinkResources = true
             proguardFiles( // ProGuard/R8 rules used when shrinking/optimising
                 getDefaultProguardFile("proguard-android-optimize.txt"), // Standard optimised rules supplied by the Android plugin
                 "proguard-rules.pro" // Your custom rules file

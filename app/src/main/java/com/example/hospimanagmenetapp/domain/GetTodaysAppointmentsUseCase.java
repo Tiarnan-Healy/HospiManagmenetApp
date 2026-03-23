@@ -16,7 +16,7 @@ public class GetTodaysAppointmentsUseCase {
         this.repo = new AppointmentRepository(ctx);
     }
 
-    public List<Appointment> execute(String clinic) throws Exception {
+    public List<Appointment> execute(String clinic, String specialty) throws Exception {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
@@ -25,6 +25,6 @@ public class GetTodaysAppointmentsUseCase {
         long start = cal.getTimeInMillis();
         cal.add(Calendar.DAY_OF_MONTH, 1);
         long end = cal.getTimeInMillis();
-        return repo.getTodaysAppointments(clinic, start, end);
+        return repo.getTodaysAppointments(clinic, specialty, start, end);
     }
 }

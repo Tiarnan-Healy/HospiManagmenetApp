@@ -1,5 +1,7 @@
 package com.example.hospimanagmenetapp.feature.appointments.ui;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -8,7 +10,13 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.example.hospimanagmenetapp.R;
 import com.example.hospimanagmenetapp.data.entities.Appointment;
@@ -17,6 +25,10 @@ import com.example.hospimanagmenetapp.domain.DetectScheduleConflictsUseCase;
 import com.example.hospimanagmenetapp.security.auth.RbacPolicyEvaluator;
 import com.example.hospimanagmenetapp.util.SessionManager;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.Executors;
 
 public class BookingFragment extends Fragment {
@@ -27,6 +39,23 @@ public class BookingFragment extends Fragment {
     private static final String ARG_START = "start";
     private static final String ARG_END = "end";
     private static final String ARG_CLINIC = "clinic";
+
+    private final SimpleDateFormat displayFormat =
+            new SimpleDateFormat("dd MMM yyyy HH:mm", Locale.UK);
+
+    // Internal epoch values set by the pickers, used for DB storage
+    private long startMillis = 0;
+    private long endMillis   = 0;
+
+    // Picker state - date is set first, then time is applied to it
+    private final Calendar startCal = Calendar.getInstance();
+    private final Calendar endCal   = Calendar.getInstance();
+
+    private TextView tvClinician, tvStartDisplay, tvEndDisplay;
+    private EditText etNhs;
+    private Button btnPickStartDate, btnPickStartTime;
+    private Button btnPickEndDate, btnPickEndTime;
+    private Button btnConfirm;
 
     public static BookingFragment newInstance(Appointment a) {
         Bundle b = new Bundle();
@@ -41,64 +70,126 @@ public class BookingFragment extends Fragment {
         return f;
     }
 
-    private EditText etStart, etEnd, etNhs;
-    private TextView tvClinician;
-    private Button btnConfirm;
-
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_booking, container, false);
 
-        tvClinician = v.findViewById(R.id.tvClinician);
-        etNhs = v.findViewById(R.id.etNhsBooking);
-        etStart = v.findViewById(R.id.etStartMillis);
-        etEnd = v.findViewById(R.id.etEndMillis);
-        btnConfirm = v.findViewById(R.id.btnConfirmBooking);
+        tvClinician    = v.findViewById(R.id.tvClinician);
+        tvStartDisplay = v.findViewById(R.id.tvStartDisplay);
+        tvEndDisplay   = v.findViewById(R.id.tvEndDisplay);
+        etNhs          = v.findViewById(R.id.etNhsBooking);
+        btnPickStartDate = v.findViewById(R.id.btnPickStartDate);
+        btnPickStartTime = v.findViewById(R.id.btnPickStartTime);
+        btnPickEndDate   = v.findViewById(R.id.btnPickEndDate);
+        btnPickEndTime   = v.findViewById(R.id.btnPickEndTime);
+        btnConfirm       = v.findViewById(R.id.btnConfirmBooking);
 
         Bundle args = getArguments();
         if (args != null) {
             tvClinician.setText("Clinician: " + args.getString(ARG_CLINICIAN_NAME, ""));
             etNhs.setText(args.getString(ARG_PATIENT_NHS, ""));
-            etStart.setText(String.valueOf(args.getLong(ARG_START)));
-            etEnd.setText(String.valueOf(args.getLong(ARG_END)));
+
+            // Pre-fill pickers from existing appointment times
+            startMillis = args.getLong(ARG_START);
+            endMillis   = args.getLong(ARG_END);
+            startCal.setTimeInMillis(startMillis);
+            endCal.setTimeInMillis(endMillis);
+            updateDisplays();
         }
 
-        btnConfirm.setOnClickListener(v1 -> confirm());
+        btnPickStartDate.setOnClickListener(x -> showDatePicker(true));
+        btnPickStartTime.setOnClickListener(x -> showTimePicker(true));
+        btnPickEndDate.setOnClickListener(x -> showDatePicker(false));
+        btnPickEndTime.setOnClickListener(x -> showTimePicker(false));
+        btnConfirm.setOnClickListener(x -> confirm());
+
         return v;
     }
 
+    private void showDatePicker(boolean isStart) {
+        Calendar cal = isStart ? startCal : endCal;
+        new DatePickerDialog(
+                requireContext(),
+                (picker, year, month, day) -> {
+                    cal.set(Calendar.YEAR, year);
+                    cal.set(Calendar.MONTH, month);
+                    cal.set(Calendar.DAY_OF_MONTH, day);
+                    if (isStart) {
+                        startMillis = cal.getTimeInMillis();
+                    } else {
+                        endMillis = cal.getTimeInMillis();
+                    }
+                    updateDisplays();
+                },
+                cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH),
+                cal.get(Calendar.DAY_OF_MONTH)
+        ).show();
+    }
+
+    private void showTimePicker(boolean isStart) {
+        Calendar cal = isStart ? startCal : endCal;
+        new TimePickerDialog(
+                requireContext(),
+                (picker, hour, minute) -> {
+                    cal.set(Calendar.HOUR_OF_DAY, hour);
+                    cal.set(Calendar.MINUTE, minute);
+                    cal.set(Calendar.SECOND, 0);
+                    cal.set(Calendar.MILLISECOND, 0);
+                    if (isStart) {
+                        startMillis = cal.getTimeInMillis();
+                    } else {
+                        endMillis = cal.getTimeInMillis();
+                    }
+                    updateDisplays();
+                },
+                cal.get(Calendar.HOUR_OF_DAY),
+                cal.get(Calendar.MINUTE),
+                true // 24-hour format
+        ).show();
+    }
+
+    private void updateDisplays() {
+        tvStartDisplay.setText(startMillis > 0
+                ? displayFormat.format(new Date(startMillis))
+                : "Not selected");
+        tvEndDisplay.setText(endMillis > 0
+                ? displayFormat.format(new Date(endMillis))
+                : "Not selected");
+    }
+
     private void confirm() {
-        // RBAC check — runs on main thread, no DB access, fine here
+        // RBAC check - main thread, no DB access
         if (!RbacPolicyEvaluator.canBookOrReschedule(requireContext())) {
-            android.util.Log.d("BookingFragment", "RBAC block — role: "
+            android.util.Log.d("BookingFragment", "RBAC block - role: "
                     + SessionManager.getCurrentRole(requireContext()));
             Toast.makeText(getContext(),
-                    "You do not have permission to book.", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        // Input validation — main thread, no DB access, fine here
-        String nhs      = etNhs.getText().toString().trim();
-        String startStr = etStart.getText().toString().trim();
-        String endStr   = etEnd.getText().toString().trim();
-
-        if (TextUtils.isEmpty(nhs) || TextUtils.isEmpty(startStr) || TextUtils.isEmpty(endStr)) {
-            Toast.makeText(getContext(),
-                    "NHS, start and end are required.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Parse longs defensively before going to background thread
-        long start;
-        long end;
-        try {
-            start = Long.parseLong(startStr);
-            end   = Long.parseLong(endStr);
-        } catch (NumberFormatException e) {
-            Toast.makeText(getContext(),
-                    "Invalid time format. Please re-open this appointment.",
+                    "You do not have permission to book appointments.",
                     Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        String nhs = etNhs.getText().toString().trim();
+        if (TextUtils.isEmpty(nhs)) {
+            Toast.makeText(getContext(),
+                    "NHS number is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Validate both times have been selected
+        if (startMillis == 0 || endMillis == 0) {
+            Toast.makeText(getContext(),
+                    "Please select both a start and end date and time.",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // End must be after start
+        if (endMillis <= startMillis) {
+            Toast.makeText(getContext(),
+                    "End time must be after start time.", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -106,28 +197,27 @@ public class BookingFragment extends Fragment {
         long clinicianId = args.getLong(ARG_CLINICIAN_ID);
         String clinic    = args.getString(ARG_CLINIC);
 
-        // ALL database work moved into the background thread
+        // All DB work on background thread
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
-                // Conflict detection — DB access, must be off main thread
+                // Conflict detection - must be off main thread
                 boolean conflict = new DetectScheduleConflictsUseCase(requireContext())
-                        .hasConflict(clinicianId, start, end);
+                        .hasConflict(clinicianId, startMillis, endMillis);
 
                 if (conflict) {
                     requireActivity().runOnUiThread(() ->
                             Toast.makeText(getContext(),
-                                    "Time conflict detected. Choose another slot.",
+                                    "Time conflict detected. Please choose another slot.",
                                     Toast.LENGTH_LONG).show());
                     return;
                 }
 
-                // Build appointment and book
                 Appointment a      = new Appointment();
                 a.patientNhsNumber = nhs;
                 a.clinicianId      = clinicianId;
                 a.clinicianName    = args.getString(ARG_CLINICIAN_NAME);
-                a.startTime        = start;
-                a.endTime          = end;
+                a.startTime        = startMillis;
+                a.endTime          = endMillis;
                 a.clinic           = clinic;
                 a.status           = "BOOKED";
 
@@ -135,8 +225,9 @@ public class BookingFragment extends Fragment {
 
                 requireActivity().runOnUiThread(() -> {
                     Toast.makeText(getContext(),
-                            "Appointment confirmed.", Toast.LENGTH_LONG).show();
-                    // Navigate back to list directly — avoids empty back stack crash
+                            "Appointment confirmed for "
+                                    + displayFormat.format(new Date(startMillis)),
+                            Toast.LENGTH_LONG).show();
                     requireActivity().getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.appointmentContainer, new AppointmentListFragment())
@@ -146,7 +237,8 @@ public class BookingFragment extends Fragment {
             } catch (Exception e) {
                 requireActivity().runOnUiThread(() ->
                         Toast.makeText(getContext(),
-                                "Booking failed. Try again.", Toast.LENGTH_LONG).show());
+                                "Booking failed. Please try again.",
+                                Toast.LENGTH_LONG).show());
             }
         });
     }

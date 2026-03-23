@@ -22,19 +22,87 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
-        <EditText
-            android:id="@+id/etStartMillis"
-            android:hint="Start time (epoch millis)"
-            android:inputType="number"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+        <TextView
+            android:text="Start Date and Time"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
-        <EditText
-            android:id="@+id/etEndMillis"
-            android:hint="End time (epoch millis)"
-            android:inputType="number"
+        <TextView
+            android:id="@+id/tvStartDisplay"
+            android:text="Not selected"
+            android:textColor="#555555"
+            android:layout_marginTop="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Selected start date and time" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btnPickStartDate"
+                android:text="Pick Date"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="Pick start date" />
+
+            <Button
+                android:id="@+id/btnPickStartTime"
+                android:text="Pick Time"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:contentDescription="Pick start time" />
+
+        </LinearLayout>
+
+        <TextView
+            android:text="End Date and Time"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tvEndDisplay"
+            android:text="Not selected"
+            android:textColor="#555555"
+            android:layout_marginTop="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Selected end date and time" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btnPickEndDate"
+                android:text="Pick Date"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="Pick end date" />
+
+            <Button
+                android:id="@+id/btnPickEndTime"
+                android:text="Pick Time"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:contentDescription="Pick end time" />
+
+        </LinearLayout>
 
         <Button
             android:id="@+id/btnConfirmBooking"
